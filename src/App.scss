@@ -7,32 +7,36 @@
   pointer-events: none;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+.header {
+  position: relative;
+  top: -30px;
+  background: url("../public/assets/images/book.png") center no-repeat;
+  -webkit-background-size: cover;
+  background-size: cover;
+  height: 300px;
   color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+  vertical-align: top;
+  padding: 30px;
+  h1{
+      margin: 50px 0;
+      font-size: 40px;
   }
-  to {
-    transform: rotate(360deg);
+
+  &-input {
+    background-color: #fff;
+
+  }
+
+  &-inputs-block {
+    margin-top: 20px;
+  }
+
+  &-input-block {
+    margin-left: 20px;
+    height: 30px;
+  }
+
+  #fullWidth {
+    background-color: #fff;
   }
 }
