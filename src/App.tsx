@@ -17,16 +17,38 @@ import {
 } from "@mui/material";
 import axios from 'axios';
 import { Pokedex } from "./interfaces/books";
+import Book from "./pages/Book/Book";
 
 function App() {
 
-  const [books, setBooks] = useState<Pokedex[]>([])
-  const [search, setSearch] = useState<string>('')
+  const [count, setCount] = useState<number>(30);
+  const [books, setBooks] = useState<Pokedex[]>([]);
+  const [search, setSearch] = useState<string>('all');
+  const [category, setCategory] = useState<string>('all');
+  const [order, setOrder] = useState<string>('relevance');
 
   const sendSearch = async() => {
+    let link = "?";
+
+    if(search.length > 0) {
+      link += "q="+search
+
+     
+    }
+
+    if(category.length > 0 && category != 'all') {
+      link += "+subject:"+category+"&"
+    }
+
+    if(order.length > 0) {
+      link += "&orderBy="+order+"&"
+    }
+
+    link += "&maxResults="+count+"&"
+
     await axios({
       method: 'get',
-      url: process.env.REACT_APP_SOURCE+"?q="+search,
+      url: process.env.REACT_APP_SOURCE+ link,
       responseType: 'stream'
     })
       .then(function (response) {
@@ -34,6 +56,9 @@ function App() {
         setBooks(book.items)
       });
   }
+
+
+
 
 
 
@@ -66,8 +91,8 @@ function App() {
           <Grid container spacing={2}>
             <Grid item xs={6}>
               Categories
-              <select className="header-input-block">
-                <option value="all">all</option>
+              <select className="header-input-block" onChange={(e) => setCategory(e.target.value)}>
+                <option value="all" selected="selected">all</option>
                 <option value="art">art</option>
                 <option value="biography">biography</option>
                 <option value="computers">computers</option>
@@ -78,8 +103,8 @@ function App() {
             </Grid>
             <Grid item xs={6}>
               Sorting By
-              <select className="header-input-block">
-                <option value="relevance">relevance</option>
+              <select className="header-input-block" onChange={(e) => setOrder(e.target.value)}>
+                <option value="relevance" selected="selected">relevance</option>
                 <option value="newest">newest</option>
               </select>
             </Grid>
@@ -90,6 +115,7 @@ function App() {
         <Routes>
           
           <Route path="/" element={<Home items={{books}} />} />
+          <Route path="/book/:id" element={<Book />} />
         </Routes>
       </BrowserRouter>
     </Box>
