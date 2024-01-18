@@ -3,9 +3,34 @@ import { FC } from "react";
 import { Pokedex } from "../../interfaces/books";
 import { Box, Button, Card, CardActions, CardContent, CardMedia, Container, Grid, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import fetchOptions, { setOptions } from "../../redux/actions/books";
 
-const Home: FC<Pokedex[]> = (items) => {
-  let books = items.items.books;
+const Home: FC<Pokedex[]> = (link) => {
+
+  
+  const { count } = useSelector(
+    ({books }) => books
+  );
+
+  const { items: books } = useSelector(
+    ({books }) => books
+  );
+
+
+
+
+  const dispatch = useDispatch();
+
+
+
+
+  const loadMore = () => {
+
+    dispatch(fetchOptions(link.link, count+10))
+  }
+
+
 
   return (
     <Box>
@@ -16,7 +41,7 @@ const Home: FC<Pokedex[]> = (items) => {
 
    <Grid container spacing={2}>
     {books.map((item) => {
-     console.log(item)
+
         return (
          
              <Grid item  md={4}>
@@ -83,7 +108,7 @@ const Home: FC<Pokedex[]> = (items) => {
     })}
 
    </Grid>
-   <Button variant="text" className="mt-20">load more</Button>
+   <Button variant="text" className="mt-20" onClick={() => loadMore()}>load more</Button>
    </Container>
  </Box>
       )}

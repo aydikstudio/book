@@ -1,60 +1,65 @@
 // @ts-nocheck
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { SearchOutlined } from "@material-ui/icons";
+
 import "./App.scss";
 import Home from "./pages/Home/Home";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import {
-  FormControl,
   Grid,
   IconButton,
-  InputLabel,
-  MenuItem,
-  Select,
   Typography,
 } from "@mui/material";
-import axios from 'axios';
-import { Pokedex } from "./interfaces/books";
+
 import Book from "./pages/Book/Book";
+import { useDispatch, useSelector } from "react-redux";
+import fetchOptions from "./redux/actions/books";
+import SearchIcon from "@material-ui/icons/Search";
 
 function App() {
 
-  const [count, setCount] = useState<number>(30);
-  const [books, setBooks] = useState<Pokedex[]>([]);
-  const [search, setSearch] = useState<string>('all');
+
+  const { count } = useSelector(
+    ({books }) => books
+  );
+
+  const [search, setSearch] = useState<string>('');
   const [category, setCategory] = useState<string>('all');
   const [order, setOrder] = useState<string>('relevance');
+  const [link, setLink] = useState<string>('');
+
+  const dispatch = useDispatch();
+
 
   const sendSearch = async() => {
-    let link = "?";
-
     if(search.length > 0) {
-      link += "q="+search
+      let link_search = "?";
 
+      if(search.length > 0) {
+        link_search += "q="+search
+  
+       
+      }
+  
+      if(category.length > 0 && category != 'all') {
+        link_search += "+subject:"+category+"&"
+      }
+  
+      if(order.length > 0) {
+        link_search += "&orderBy="+order+"&"
+      }
+  
      
+      setLink(link_search)
+  
+  
+      dispatch(fetchOptions(link_search, count))
+    } else {
+      alert("Input values")
     }
-
-    if(category.length > 0 && category != 'all') {
-      link += "+subject:"+category+"&"
-    }
-
-    if(order.length > 0) {
-      link += "&orderBy="+order+"&"
-    }
-
-    link += "&maxResults="+count+"&"
-
-    await axios({
-      method: 'get',
-      url: process.env.REACT_APP_SOURCE+ link,
-      responseType: 'stream'
-    })
-      .then(function (response) {
-        let book = JSON.parse(response.data);
-        setBooks(book.items)
-      });
+    
+    
   }
 
 
@@ -64,6 +69,7 @@ function App() {
 
   return (
     <Box className="App">
+
       <Box className="header">
         <Typography variant="h1" component="h1">
           Search for books
@@ -81,11 +87,13 @@ function App() {
           InputProps={{
             endAdornment: (
               <IconButton>
-                <SearchOutlined onClick={() => sendSearch()} />
+                <SearchIcon onClick={() => sendSearch()} />
               </IconButton>
             ),
           }}
         />
+
+    
 
         <Box className="header-inputs-block">
           <Grid container spacing={2}>
@@ -114,7 +122,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           
-          <Route path="/" element={<Home items={{books}} />} />
+          <Route path="/" element={<Home link={link}/>} />
           <Route path="/book/:id" element={<Book />} />
         </Routes>
       </BrowserRouter>
